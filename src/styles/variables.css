@@ -1,0 +1,52 @@
+/* ----------------------------- Color Variables ---------------------------- */
+
+:root {
+  --background: #ffffff;
+  --foreground: #2a3239;
+
+  --neutral-50: #fafafa;
+  --neutral-100: #f9fafb;
+  --neutral-200: #eef0f3;
+  --neutral-300: #dfe3e7;
+  --neutral-400: #aeb2b7;
+  --neutral-500: #7b8186;
+  --neutral-600: #5b6167;
+  --neutral-700: #464e54;
+  --neutral-800: #2a3239;
+  --neutral-900: #121920;
+
+  --blue-50: #eff9fe;
+  --blue-100: #dff3fd;
+  --blue-200: #b9e7f9;
+  --blue-300: #7cd5f5;
+  --blue-400: #36c0ee;
+  --blue-500: #05a8de;
+  --blue-600: #0087bc;
+  --blue-700: #006b98;
+  --blue-800: #005b7f;
+  --blue-800: #004c6a;
+
+  --green-50: #effdf5;
+  --green-100: #dbfde9;
+  --green-200: #b7f9d3;
+  --green-300: #79f3b0;
+  --green-400: #11e384;
+  --green-500: #00c769;
+  --green-600: #00a454;
+  --green-700: #008144;
+  --green-800: #056638;
+  --green-900: #056638;
+
+  --blueDark-50: #f8fafc;
+  --blueDark-100: #f5f7f9;
+  --blueDark-200: #e6eaee;
+  --blueDark-300: #d0d6dd;
+  --blueDark-400: #9aa4b1;
+  --blueDark-500: #697485;
+  --blueDark-600: #4a5565;
+  --blueDark-700: #354152;
+  --blueDark-800: #1f293a;
+  --blueDark-900: #0f172a;
+
+  --box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
