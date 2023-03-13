@@ -16,7 +16,10 @@ const defaultGeneralInfo = {
 function GlobalContextWrapper({ children }) {
   const [generalInfo, setGeneralInfo] = useState(defaultGeneralInfo);
   const [workspaces, setWorkspaces] = useState([]);
-  const [tools, setTools] = useState([]);
+  const [tools, setTools] = useState({
+    tools: [],
+    comment: "",
+  });
   const [fullInformation, setFullInformation] = useState({});
   const [selectedWorkspaces, setSelectedWorkspaces] = useState([]);
 

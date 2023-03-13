@@ -89,7 +89,7 @@ function SelectWorkspacesModal({
         ></MultiSelect>
 
         <Flex justify="right">
-          <Button onClick={close}>Ajouter</Button>
+          <Button onClick={close}>OK</Button>
         </Flex>
       </Stack>
     </Modal>

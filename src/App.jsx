@@ -1,13 +1,21 @@
+import React, { Suspense, lazy } from "react";
 import { MantineProvider } from "@mantine/core";
-import Home from "./pages/Home";
-import GlobalContext from "./utils/globalContext";
 import GlobalContextWrapper from "./utils/globalContext";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import Generator from "./pages/Generator";
+
+import Home from "./pages/Home";
+const Generator = lazy(() => import("./pages/Generator"));
 
 const router = createBrowserRouter([
   { path: "/", element: <Home /> },
-  { path: "/generated_result", element: <Generator /> },
+  {
+    path: "/generated_result",
+    element: (
+      <Suspense fallback={<div>Loading...</div>}>
+        <Generator />
+      </Suspense>
+    ),
+  },
 ]);
 
 function App() {

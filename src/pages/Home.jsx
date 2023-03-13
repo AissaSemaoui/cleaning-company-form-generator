@@ -26,7 +26,7 @@ function Home() {
   const GenerateButton = () => {
     return (
       <Link to="/generated_result">
-        <Button variant="outline">Preview</Button>;
+        <Button variant="outline">Preview</Button>
       </Link>
     );
   };

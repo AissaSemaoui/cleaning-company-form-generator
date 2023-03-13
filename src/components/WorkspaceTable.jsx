@@ -14,6 +14,15 @@ import { frequencyOptions } from "../utils/data";
 
 function WorkspaceTable(props) {
   const { selectedTasks, setSelectedTasks, tasks } = props;
+  const addTaskRef = useRef(null);
+
+  const handleAddTask = () => {
+    tasks.push({
+      task: addTaskRef.current.value,
+    });
+    addTaskRef.current.value = "";
+    setSelectedTasks((prev) => [...prev]);
+  };
 
   return (
     <Table verticalSpacing={10} withBorder highlightOnHover>
@@ -33,10 +42,16 @@ function WorkspaceTable(props) {
         />
         <tr>
           <td colSpan={3}>
-            <TextInput placeholder="nom de tache" size="sm" />
+            <TextInput placeholder="nom de tache" size="sm" ref={addTaskRef} />
           </td>
           <td>
-            <Button variant="filled" size="sm" color="blue" fullWidth>
+            <Button
+              variant="filled"
+              size="sm"
+              color="blue"
+              onClick={handleAddTask}
+              fullWidth
+            >
               Ajouter&nbsp;
               <FiPlus />
             </Button>
@@ -52,6 +67,9 @@ export default WorkspaceTable;
 const useStyle = createStyles((theme) => ({
   radioLabel: {
     paddingLeft: 5,
+  },
+  cursorPointer: {
+    cursor: "pointer",
   },
 }));
 
@@ -72,25 +90,25 @@ const Rows = ({ selectedTasks, setSelectedTasks, tasks }) => {
 
 const Row = ({ task, selectedTasks, setSelectedTasks }) => {
   const { classes } = useStyle();
-  const [frequencyInputs, setFrequencyInputs] = useState({
-    frequency: "H",
-    frequencyCount: 1,
-  });
 
-  const defaultTask = {
+  const defaultTask = useRef({
     task: task?.task,
     selected: false,
     frequency: "H",
     frequencyCount: 1,
-  };
+  });
 
-  console.log("selected tasks inside row : ", selectedTasks);
+  const [frequencyInputs, setFrequencyInputs] = useState({
+    frequency: defaultTask.current.frequency,
+    frequencyCount: defaultTask.current.frequencyCount,
+  });
 
   const currentTask =
-    selectedTasks.find((t) => t.task === task.task) || defaultTask;
+    selectedTasks.find((t) => t.task === task.task) || defaultTask.current;
 
-  console.log(currentTask);
-  const [checked, setChecked] = useState(currentTask?.selected);
+  console.log("selected tasks inside row : ", currentTask);
+
+  const [checked, setChecked] = useState(true);
 
   const removeFromSelectedTasks = (task) => {
     setSelectedTasks((prev) =>
@@ -99,20 +117,23 @@ const Row = ({ task, selectedTasks, setSelectedTasks }) => {
   };
 
   const handleCheck = (e) => {
-    setChecked(e.currentTarget.checked);
+    setChecked((checked) => !checked);
 
-    if (e.currentTarget.checked) {
-      setSelectedTasks((prev) => [...prev, { ...defaultTask, selected: true }]);
+    if (checked === false) {
+      setSelectedTasks((prev) => [
+        ...prev,
+        { ...defaultTask.current, selected: true },
+      ]);
     } else {
-      removeFromSelectedTasks(defaultTask);
+      removeFromSelectedTasks(defaultTask.current);
     }
   };
 
   const updateFrequency = (value) => {
-    defaultTask.frequency = value;
+    defaultTask.current.frequency = value;
     setFrequencyInputs((prev) => ({ ...prev, frequency: value }));
     selectedTasks.map((selectedTask) => {
-      selectedTask.task === defaultTask.task
+      selectedTask.task === defaultTask.current.task
         ? (selectedTask.frequency = value)
         : null;
       return selectedTask;
@@ -120,10 +141,10 @@ const Row = ({ task, selectedTasks, setSelectedTasks }) => {
   };
 
   const updateFrequencyCount = (value) => {
-    defaultTask.frequencyCount = value;
+    defaultTask.current.frequencyCount = value;
     setFrequencyInputs((prev) => ({ ...prev, frequencyCount: value }));
     selectedTasks.map((selectedTask) => {
-      selectedTask.task === defaultTask.task
+      selectedTask.task === defaultTask.current.task
         ? (selectedTask.frequencyCount = value)
         : null;
       return selectedTask;
@@ -141,10 +162,12 @@ const Row = ({ task, selectedTasks, setSelectedTasks }) => {
 
   return (
     <tr key={task.task}>
-      <td>
+      <td className={classes.cursorPointer} onClick={handleCheck}>
         <Checkbox size="md" checked={checked} onChange={handleCheck}></Checkbox>
       </td>
-      <td>{task.task}</td>
+      <td className={classes.cursorPointer} onClick={handleCheck}>
+        {task.task}
+      </td>
       <td>
         <Radio.Group
           defaultValue={"H"}
@@ -159,7 +182,7 @@ const Row = ({ task, selectedTasks, setSelectedTasks }) => {
                 value={item.label}
                 labelPosition="right"
                 label={item.label}
-                classtasks={{
+                classNames={{
                   label: classes.radioLabel,
                 }}
               />

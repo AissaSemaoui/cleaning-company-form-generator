@@ -1,9 +1,18 @@
 import { Box, Checkbox, Flex, Paper, Title } from "@mantine/core";
-import React from "react";
+import React, { useState } from "react";
 import { useGlobalContext } from "../utils/globalContext";
+import Comment from "./Comment";
+import { toolsOptions } from "../utils/data";
 
 function Tools() {
   const { tools, setTools } = useGlobalContext();
+  const [comment, setComment] = useState("");
+
+  tools.comment = comment;
+
+  const hanldeCheckTools = (value) => {
+    setTools((prev) => ({ ...prev, tools: value }));
+  };
 
   return (
     <Box mt="6rem">
@@ -12,20 +21,17 @@ function Tools() {
       </Title>
       <Paper shadow="xs" p="lg">
         <Checkbox.Group
-          value={tools}
-          onChange={setTools}
+          value={tools.tools}
+          onChange={hanldeCheckTools}
           label="Selectionner les outils desponible"
         >
-          <Flex wrap="wrap" mt="md" gap="xl">
-            <Checkbox value="Aspirateurs" label="Aspirateurs"></Checkbox>
-            <Checkbox
-              value="Chariot de lavage"
-              label="Chariot de lavage"
-            ></Checkbox>
-            <Checkbox value="mono_brosses" label="mono brosses"></Checkbox>
-            <Checkbox value="Produits" label="Produits"></Checkbox>
+          <Flex wrap="wrap" mt="md" mb="xl" gap="xl">
+            {toolsOptions.map((tool) => (
+              <Checkbox value={tool} label={tool}></Checkbox>
+            ))}
           </Flex>
         </Checkbox.Group>
+        <Comment comment={comment} setComment={setComment} />
       </Paper>
     </Box>
   );

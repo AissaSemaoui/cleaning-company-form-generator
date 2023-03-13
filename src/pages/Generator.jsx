@@ -14,6 +14,11 @@ import {
 import { useGlobalContext } from "../utils/globalContext";
 import { Link } from "react-router-dom";
 
+// fonts
+import RobotoBold from "../assets/fonts/Roboto-Bold.ttf";
+import RobotoRegular from "../assets/fonts/Roboto-Regular.ttf";
+import RobotoMedium from "../assets/fonts/Roboto-Medium.ttf";
+
 function Generator() {
   const { fullInformation } = useGlobalContext();
 
@@ -26,7 +31,7 @@ function Generator() {
   const BackToFormButton = () => {
     return (
       <Link to="/">
-        <Button variant="outline">Back to form</Button>;
+        <Button variant="outline">Back to form</Button>
       </Link>
     );
   };
@@ -53,11 +58,29 @@ function Generator() {
 
 export default Generator;
 
+Font.register({
+  family: "Roboto",
+  fonts: [
+    {
+      src: RobotoRegular,
+    },
+    {
+      src: RobotoBold,
+      fontWeight: "bold",
+    },
+    {
+      src: RobotoMedium,
+      fontWeight: "normal",
+    },
+  ],
+});
+
 const styles = StyleSheet.create({
   page: {
     paddingVertical: 20,
   },
   h1: {
+    fontFamily: "Roboto",
     fontSize: 20,
     fontWeight: 900,
     textAlign: "center",
@@ -69,7 +92,16 @@ const styles = StyleSheet.create({
     // backgroundColor: "#004c6a",
     marginHorizontal: "auto",
   }, // page style
+  title: {
+    fontFamily: "Roboto",
+    fontWeight: "bold",
+    fontSize: 12,
+    marginBottom: 10,
+    lineHeight: 1.5,
+  },
   text: {
+    fontFamily: "Roboto",
+    fontWeight: "normal",
     fontSize: 12,
     marginBottom: 10,
     lineHeight: 1.5,
@@ -85,8 +117,8 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   image: {
-    width: 100,
     height: 100,
+    objectFit: "contain",
   },
 });
 
@@ -105,47 +137,55 @@ function PdfTemplate({ fullInformation }) {
 
   console.log("fullInformation inside Generator.jsx: ", fullInformation);
 
-  Font.register({
-    family: "Roboto",
-    fontStyle: "normal",
-    fontWeight: "normal",
-  });
-
   return (
     <Document>
       <Page style={styles.page} wrap={true}>
-        <Text style={styles.h1} fixed>
-          Cahier des charges Nettoyage
-        </Text>
+        <Text style={styles.h1}>Cahier des charges Nettoyage</Text>
         <View style={styles.container} wrap={true}>
           <View>
-            <Text style={styles.text}>Locaux ou domicile</Text>
-            <Text style={styles.text}>le nom : {fullName} </Text>
-            <Text style={styles.text}>Tel : {contactInfo} </Text>
-            <Text style={styles.text}>Surface {surface} m² </Text>
-            <Text style={styles.text}>Nombre de pièces : {roomCount}</Text>
-            <Text style={styles.text}>Type de locaux : {spaceType}</Text>
-            <Text style={styles.text}>
-              Jours de passage :{" "}
-              {preferredDays?.map((day, id, arr) => {
-                if (id === arr.length - 1) return day + ".";
-                return day + ", ";
-              })}
+            {/* <Text style={styles.title}>Locaux ou domicile</Text> */}
+            <Text style={styles.title}>
+              le nom : <Text style={styles.text}>{fullName} </Text>
             </Text>
-            <Text style={styles.text}> Fréquence : {serviceFrequency}</Text>
-          </View>
-          <View style={styles.mt}>
-            <Text style={styles.text}>
-              Le chiffre indiqué correspond à la fréquence de l’opération dans
-              la période concernée, hors samedi, dimanche et jours fériés
+            <Text style={styles.title}>
+              Tel : <Text style={styles.text}>{contactInfo} </Text>
             </Text>
-            <Text style={styles.text}> H = Hebdomadaire</Text>
-            <Text style={styles.text}> M = Mensuel </Text>
-            <Text style={styles.text}> BM = Bi-mensuelle </Text>
-            <Text style={styles.text}> T = Trimestrielle </Text>
-            <Text style={styles.text}> A = Annuelle </Text>
+            <Text style={styles.title}>
+              Surface : <Text style={styles.text}>{surface} m²</Text>
+            </Text>
+            <Text style={styles.title}>
+              Nombre de pièces : <Text style={styles.text}>{roomCount} </Text>
+            </Text>
+            <Text style={styles.title}>
+              Type de locaux : <Text style={styles.text}>{spaceType} </Text>
+            </Text>
+            <Text style={styles.title}>
+              Jours de passage :
+              <Text style={styles.text}>
+                {" "}
+                {preferredDays?.map((day, id, arr) => {
+                  if (id === arr.length - 1) return day + ".";
+                  return day + ", ";
+                })}
+              </Text>
+            </Text>
+            <Text style={styles.title}>
+              {" "}
+              Fréquence : <Text style={styles.text}>{serviceFrequency} </Text>
+            </Text>
           </View>
           <View>
+            <View style={styles.mt}>
+              <Text style={styles.text}>
+                Le chiffre indiqué correspond à la fréquence de l’opération dans
+                la période concernée, hors samedi, dimanche et jours fériés
+              </Text>
+              <Text style={styles.text}> H = Hebdomadaire</Text>
+              <Text style={styles.text}> M = Mensuel </Text>
+              <Text style={styles.text}> BM = Bi-mensuelle </Text>
+              <Text style={styles.text}> T = Trimestrielle </Text>
+              <Text style={styles.text}> A = Annuelle </Text>
+            </View>
             {workspaces?.map((workspace) => {
               console.log("workspace inside PdfTemplate: ", workspace);
               return (
@@ -153,15 +193,32 @@ function PdfTemplate({ fullInformation }) {
                   <View>
                     <WorkspaceTablePdf data={workspace} />
                   </View>
+                  {workspace?.comment && (
+                    <Text style={{ ...styles.mt, ...styles.text }}>
+                      note : {workspace.comment}
+                    </Text>
+                  )}
                   <View style={styles.imagesWrapper}>
                     {workspace.images?.map((image) => (
                       <Image style={styles.image} src={image} />
                     ))}
                   </View>
-                  <Text style={styles.text}>Note : {workspace.comment}</Text>
                 </View>
               );
             })}
+          </View>
+          <View style={styles.mt}>
+            <Text style={styles.title}>les outils disponible : </Text>
+            <Text style={styles.text}>
+              {tools?.tools?.length > 0
+                ? tools?.tools?.map((tool, index, self) =>
+                    self.length - 1 === index ? tool + ". " : tool + ", "
+                  )
+                : "Aucun"}
+            </Text>
+            {tools?.comment && (
+              <Text style={styles.text}>note : {tools?.comment}</Text>
+            )}
           </View>
         </View>
       </Page>
@@ -171,8 +228,10 @@ function PdfTemplate({ fullInformation }) {
 
 const WorkspaceTablePdf = ({ data }) => {
   return (
-    <View style={styles.mt} wrap={false}>
-      <Text style={styles.text}>Le Salon : ( {data.soilType} ) </Text>
+    <View style={styles.mt} wrap={true}>
+      <Text style={styles.title}>
+        {data.id} : ( {data.soilType} )
+      </Text>
       <Table data={data.selectedTasks}>
         <TableHeader fontSize={10}>
           <TableCell weighting={11} style={{ padding: 5 }}>

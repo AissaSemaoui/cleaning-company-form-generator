@@ -92,9 +92,9 @@ const AccordionControl = (props) => {
     useGlobalContext();
   const { classes } = useStayles();
   const id = props.id;
-  const currentWorkspace = workspaces.find(
-    (workspace) => workspace.id === props.id
-  );
+  const [soilType, setSoilType] = useState(defaultSoilType);
+  const currentWorkspace =
+    workspaces.find((workspace) => workspace.id === props.id) || {};
 
   const handleDelete = (event) => {
     event.stopPropagation();
@@ -104,12 +104,17 @@ const AccordionControl = (props) => {
     setSelectedWorkspaces((prev) => [
       ...prev.filter((workspace) => workspace.value !== id),
     ]);
-    console.log("workspaces delete : ", workspaces);
   };
+  console.log("workspaces inside workspaces : ", workspaces);
 
   const handleChangeSoilType = (value) => {
     currentWorkspace.soilType = value;
+    setSoilType(value);
   };
+
+  // useEffect(() => {
+  //   setSoilType(currentWorkspace.soilType);
+  // }, [currentWorkspace.soilType]);
 
   return (
     <Flex
@@ -135,6 +140,7 @@ const AccordionControl = (props) => {
           }}
           size="sm"
           data={floorType}
+          value={soilType}
           defaultValue={defaultSoilType}
           onChange={handleChangeSoilType}
           onClick={(event) => event.stopPropagation()}

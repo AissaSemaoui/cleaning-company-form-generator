@@ -24,6 +24,7 @@ const useStyle = createStyles((theme) => ({
 
 const GeneralInfo = () => {
   const { setGeneralInfo } = useGlobalContext();
+  const [disabled, setDisabled] = useState(false);
   const { classes } = useStyle();
 
   const defaultGeneralInfo = {
@@ -42,7 +43,14 @@ const GeneralInfo = () => {
 
   const handleSubmit = (values) => {
     setGeneralInfo(values);
+    setDisabled(true);
   };
+
+  const handleEdit = (e) => {
+    e.preventDefault();
+    setDisabled(false);
+  };
+  console.log(disabled);
 
   return (
     <Paper shadow="xs" mt="3rem" p="md" bg="background.1">
@@ -58,6 +66,7 @@ const GeneralInfo = () => {
               name="fullName"
               className={classes.input}
               withAsterisk
+              disabled={disabled}
               {...form.getInputProps("fullName")}
             />
             <TextInput
@@ -66,6 +75,7 @@ const GeneralInfo = () => {
               name="contactInfo"
               className={classes.input}
               withAsterisk
+              disabled={disabled}
               {...form.getInputProps("contactInfo")}
             />
           </Group>
@@ -76,6 +86,7 @@ const GeneralInfo = () => {
               name="surface"
               className={classes.input}
               withAsterisk
+              disabled={disabled}
               {...form.getInputProps("surface")}
             />
             <NumberInput
@@ -84,6 +95,7 @@ const GeneralInfo = () => {
               name="roomCount"
               className={classes.input}
               withAsterisk
+              disabled={disabled}
               {...form.getInputProps("roomCount")}
             />
           </Group>
@@ -95,6 +107,7 @@ const GeneralInfo = () => {
               name="preferredDays"
               className={classes.input}
               withAsterisk
+              disabled={disabled}
               {...form.getInputProps("preferredDays")}
             />
             <Select
@@ -104,6 +117,7 @@ const GeneralInfo = () => {
               name="spaceType"
               className={classes.input}
               withAsterisk
+              disabled={disabled}
               {...form.getInputProps("spaceType")}
             />
           </Group>
@@ -115,11 +129,18 @@ const GeneralInfo = () => {
               name="serviceFrequency"
               className={classes.input}
               withAsterisk
+              disabled={disabled}
               {...form.getInputProps("serviceFrequency")}
             />
           </Group>
           <Group position="right">
-            <Button type="submit">Ajouter</Button>
+            {disabled ? (
+              <Button type="button" onClick={handleEdit}>
+                Edit
+              </Button>
+            ) : (
+              <Button type="submit">Ajouter</Button>
+            )}
           </Group>
         </Flex>
       </form>
