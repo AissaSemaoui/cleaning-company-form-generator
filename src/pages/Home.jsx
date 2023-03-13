@@ -11,6 +11,7 @@ import {
 import Workspaces from "../components/Workspaces";
 import GeneralInfo from "../components/GeneralInfo";
 import Tools from "../components/Tools";
+import { Link } from "react-router-dom";
 
 const useStyle = createStyles((theme) => ({
   main: {
@@ -22,10 +23,18 @@ const useStyle = createStyles((theme) => ({
 function Home() {
   const { classes } = useStyle();
 
+  const GenerateButton = () => {
+    return (
+      <Link to="/generated_result">
+        <Button variant="outline">Preview</Button>;
+      </Link>
+    );
+  };
+
   return (
     <>
       <header>
-        <Navbar Button={<Button variant="outline">Preview</Button>} />
+        <Navbar Button={<GenerateButton />} />
       </header>
       <Container size="lg" className="container">
         <main className={classes.main}>

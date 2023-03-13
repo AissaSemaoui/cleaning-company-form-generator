@@ -78,7 +78,7 @@ function DropFiles(props) {
             ]}
           >
             {images.map((image) => (
-              <Carousel.Slide>
+              <Carousel.Slide key={image}>
                 <Stack justify="space-between" h="100%">
                   <Box
                     style={{

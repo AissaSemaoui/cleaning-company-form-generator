@@ -29,8 +29,6 @@ function Comment(props) {
     commentRef.current.value = "";
   };
 
-  console.log(comment);
-
   return (
     <Flex align="end" gap="sm">
       {comment === "" ? (

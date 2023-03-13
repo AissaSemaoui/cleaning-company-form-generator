@@ -41,7 +41,6 @@ const GeneralInfo = () => {
   });
 
   const handleSubmit = (values) => {
-    console.log(values);
     setGeneralInfo(values);
   };
 

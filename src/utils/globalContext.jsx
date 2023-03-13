@@ -1,14 +1,30 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createContext, useContext } from "react";
 
 const GlobalContext = createContext();
 
+const defaultGeneralInfo = {
+  fullName: "Aissa", // nom
+  contactInfo: "", // email / tel
+  surface: "", // m²
+  roomCount: "", // nombre de pièces
+  preferredDays: [], // jours d'intervention souhaitée
+  spaceType: "", // professionnel / particulier
+  serviceFrequency: "", // ponctuel / recurrent
+};
+
 function GlobalContextWrapper({ children }) {
-  const [generalInfo, setGeneralInfo] = useState({});
+  const [generalInfo, setGeneralInfo] = useState(defaultGeneralInfo);
   const [workspaces, setWorkspaces] = useState([]);
   const [tools, setTools] = useState([]);
+  const [fullInformation, setFullInformation] = useState({});
+  const [selectedWorkspaces, setSelectedWorkspaces] = useState([]);
 
-  console.log("inside global context wrapper", generalInfo, workspaces, tools);
+  useEffect(() => {
+    setFullInformation({ generalInfo, workspaces, tools });
+  }, [generalInfo, workspaces, tools]);
+
+  console.log("inside global context wrapper", fullInformation);
 
   return (
     <GlobalContext.Provider
@@ -19,6 +35,9 @@ function GlobalContextWrapper({ children }) {
         setWorkspaces,
         tools,
         setTools,
+        fullInformation,
+        selectedWorkspaces,
+        setSelectedWorkspaces,
       }}
     >
       {children}

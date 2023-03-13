@@ -1,9 +1,11 @@
+const defaultSoilType = "Carellage";
+
 const frequencyOptions = [
-  { label: "H", value: "Hebdomadaire" },
-  { label: "M", value: "Mensuelle" },
-  { label: "BM", value: "Bi-mensuelle" },
-  { label: "T", value: "Trimestrielle" },
-  { label: "A", value: "Annuelle" },
+  { label: "H", value: "H" }, // Hebdomadaire
+  { label: "M", value: "M" }, // Mensuelle
+  { label: "BM", value: "BM" }, // Bi-mensuelle
+  { label: "T", value: "T" }, // Trimestrielle
+  { label: "A", value: "A" }, // Annuelle
 ];
 
 const floorType = [
@@ -15,4 +17,32 @@ const floorType = [
   "Sol particulier",
 ];
 
-export { frequencyOptions, floorType };
+const workspacesOptions = [
+  {
+    label: "Bureau",
+    value: "Bureau",
+    tasks: [
+      { task: "Nettoyage de bureau" },
+      { task: "Nettoyage des sanitaires" },
+      { task: "Nettoyage des vitres" },
+      { task: "Nettoyage des sols" },
+      { task: "Nettoyage des meubles" },
+      { task: "Nettoyage des appareils électriques" },
+      { task: "Nettoyage des poubelles" },
+    ],
+  },
+  {
+    label: "Salle de réunion",
+    value: "Salle de réunion",
+    tasks: [
+      { task: "Nettoyage des sanitaires" },
+      { task: "Nettoyage des vitres" },
+      { task: "Nettoyage des sols" },
+      { task: "Nettoyage des meubles" },
+      { task: "Nettoyage des appareils électriques" },
+      { task: "Nettoyage des poubelles" },
+    ],
+  },
+];
+
+export { workspacesOptions, frequencyOptions, floorType, defaultSoilType };

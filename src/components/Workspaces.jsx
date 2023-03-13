@@ -9,14 +9,13 @@ import {
   Stack,
   Title,
   createStyles,
-  rem,
 } from "@mantine/core";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FiXCircle } from "react-icons/fi";
-import WorkspaceTable from "./WorkspaceTable";
-import Comment from "./Comment";
-import DropFiles from "./DropFiles";
-import { floorType } from "../utils/data";
+import { defaultSoilType, floorType } from "../utils/data";
+import SingleWorkspace from "./SingleWorkspace";
+import SelectWorkspacesModal from "./SelectWorkspacesModal";
+import { useDisclosure } from "@mantine/hooks";
 import { useGlobalContext } from "../utils/globalContext";
 
 const useStayles = createStyles((theme) => ({
@@ -37,6 +36,9 @@ const useStayles = createStyles((theme) => ({
 }));
 
 function Workspaces() {
+  const [opened, { open, close }] = useDisclosure(false);
+
+  const { selectedWorkspaces, setSelectedWorkspaces } = useGlobalContext();
   const { classes } = useStayles();
 
   return (
@@ -45,64 +47,69 @@ function Workspaces() {
         <Title order={2} weight={500}>
           Workspaces
         </Title>
-        <Button>Ajouter un espace de travail</Button>
+        <Button onClick={open}>Ajouter un espace de travail</Button>
       </Group>
       <Stack>
         <Accordion variant="separated" chevronPosition="left">
-          <Accordion.Item value="salon" className={classes.accordion}>
-            <AccordionControl>Salon</AccordionControl>
-            <Accordion.Panel>
-              <Workspace />
-            </Accordion.Panel>
-          </Accordion.Item>
+          {selectedWorkspaces.map((workspace) => (
+            <Accordion.Item
+              key={workspace.value}
+              value={workspace.value}
+              className={classes.accordion}
+            >
+              <AccordionControl
+                setSelectedWorkspaces={setSelectedWorkspaces}
+                id={workspace.value}
+              >
+                {workspace.label}
+              </AccordionControl>
+              <Accordion.Panel>
+                <SingleWorkspace id={workspace.value} tasks={workspace.tasks} />
+              </Accordion.Panel>
+            </Accordion.Item>
+          ))}
+          {selectedWorkspaces.length === 0 && (
+            <Title order={4} align="center" color="neutral" mt="xl">
+              vous n'avez pas encore ajouté d'espace de travail
+            </Title>
+          )}
         </Accordion>
       </Stack>
+      <SelectWorkspacesModal
+        selectedWorkspaces={selectedWorkspaces}
+        setSelectedWorkspaces={setSelectedWorkspaces}
+        opened={opened}
+        close={close}
+      />
     </Box>
   );
 }
 
 export default Workspaces;
 
-const Workspace = () => {
-  const { workspaces, setWorkspaces } = useGlobalContext();
-
-  const [selectedTasks, setSelectedTasks] = useState([]);
-  const [images, setImages] = useState([]);
-  const [comment, setComment] = useState("");
-
-  useEffect(() => {
-    const data = {
-      selectedTasks,
-      images,
-      comment,
-    };
-    setWorkspaces((prev) => [...prev, data]);
-  }, [selectedTasks, images, comment]);
-
-  return (
-    <>
-      <Box
-        bg="neutral.1"
-        mb="xl"
-        style={{
-          overflowX: "auto",
-        }}
-      >
-        <WorkspaceTable
-          selectedTasks={selectedTasks}
-          setSelectedTasks={setSelectedTasks}
-        />
-      </Box>
-      <Box mb="xl">
-        <DropFiles images={images} setImages={setImages} />
-      </Box>
-      <Comment comment={comment} setComment={setComment} />
-    </>
-  );
-};
-
 const AccordionControl = (props) => {
+  const { workspaces, setWorkspaces, setSelectedWorkspaces } =
+    useGlobalContext();
   const { classes } = useStayles();
+  const id = props.id;
+  const currentWorkspace = workspaces.find(
+    (workspace) => workspace.id === props.id
+  );
+
+  const handleDelete = (event) => {
+    event.stopPropagation();
+    setWorkspaces((prev) => [
+      ...prev.filter((workspace) => workspace.id !== id),
+    ]);
+    setSelectedWorkspaces((prev) => [
+      ...prev.filter((workspace) => workspace.value !== id),
+    ]);
+    console.log("workspaces delete : ", workspaces);
+  };
+
+  const handleChangeSoilType = (value) => {
+    currentWorkspace.soilType = value;
+  };
 
   return (
     <Flex
@@ -128,14 +135,11 @@ const AccordionControl = (props) => {
           }}
           size="sm"
           data={floorType}
-          defaultValue="Lino"
+          defaultValue={defaultSoilType}
+          onChange={handleChangeSoilType}
           onClick={(event) => event.stopPropagation()}
         />
-        <ActionIcon
-          variant="subtle"
-          color="red"
-          onClick={(event) => event.stopPropagation()}
-        >
+        <ActionIcon variant="subtle" color="red" onClick={handleDelete}>
           <FiXCircle />
         </ActionIcon>
       </Flex>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Button,
   Checkbox,
@@ -13,7 +13,7 @@ import { FiPlus } from "react-icons/fi";
 import { frequencyOptions } from "../utils/data";
 
 function WorkspaceTable(props) {
-  const { selectedTasks, setSelectedTasks } = props;
+  const { selectedTasks, setSelectedTasks, tasks } = props;
 
   return (
     <Table verticalSpacing={10} withBorder highlightOnHover>
@@ -27,6 +27,7 @@ function WorkspaceTable(props) {
       </thead>
       <tbody>
         <Rows
+          tasks={tasks}
           selectedTasks={selectedTasks}
           setSelectedTasks={setSelectedTasks}
         />
@@ -56,22 +57,10 @@ const useStyle = createStyles((theme) => ({
 
 //* ----------------------------- Rows Component ----------------------------- */
 
-const Rows = ({ selectedTasks, setSelectedTasks }) => {
-  const elements = [
-    {
-      name: "Nettoyage des têtes de distributeurs de boissons dans les fontaines à soda et les bars doivent nettoyer les pointes des pistolets à soda",
-    },
-    {
-      name: "Désinfection des surfaces de la zone de préparation avec des produits désinfectants de surface",
-    },
-    {
-      name: "Nettoyage et désinfection des éviers.",
-    },
-  ];
-
-  return elements.map((task) => (
+const Rows = ({ selectedTasks, setSelectedTasks, tasks }) => {
+  return tasks.map((task) => (
     <Row
-      key={task.name}
+      key={task.task}
       task={task}
       selectedTasks={selectedTasks}
       setSelectedTasks={setSelectedTasks}
@@ -83,19 +72,29 @@ const Rows = ({ selectedTasks, setSelectedTasks }) => {
 
 const Row = ({ task, selectedTasks, setSelectedTasks }) => {
   const { classes } = useStyle();
-
-  const [checked, setChecked] = useState(false);
+  const [frequencyInputs, setFrequencyInputs] = useState({
+    frequency: "H",
+    frequencyCount: 1,
+  });
 
   const defaultTask = {
-    name: task?.name,
+    task: task?.task,
     selected: false,
-    frequency: "Hebdomadaire",
+    frequency: "H",
     frequencyCount: 1,
   };
 
+  console.log("selected tasks inside row : ", selectedTasks);
+
+  const currentTask =
+    selectedTasks.find((t) => t.task === task.task) || defaultTask;
+
+  console.log(currentTask);
+  const [checked, setChecked] = useState(currentTask?.selected);
+
   const removeFromSelectedTasks = (task) => {
     setSelectedTasks((prev) =>
-      prev.filter((selectedTask) => selectedTask.name !== task.name)
+      prev.filter((selectedTask) => selectedTask.task !== task.task)
     );
   };
 
@@ -103,7 +102,7 @@ const Row = ({ task, selectedTasks, setSelectedTasks }) => {
     setChecked(e.currentTarget.checked);
 
     if (e.currentTarget.checked) {
-      setSelectedTasks((prev) => [...prev, defaultTask]);
+      setSelectedTasks((prev) => [...prev, { ...defaultTask, selected: true }]);
     } else {
       removeFromSelectedTasks(defaultTask);
     }
@@ -111,8 +110,9 @@ const Row = ({ task, selectedTasks, setSelectedTasks }) => {
 
   const updateFrequency = (value) => {
     defaultTask.frequency = value;
+    setFrequencyInputs((prev) => ({ ...prev, frequency: value }));
     selectedTasks.map((selectedTask) => {
-      selectedTask.name === defaultTask.name
+      selectedTask.task === defaultTask.task
         ? (selectedTask.frequency = value)
         : null;
       return selectedTask;
@@ -121,33 +121,45 @@ const Row = ({ task, selectedTasks, setSelectedTasks }) => {
 
   const updateFrequencyCount = (value) => {
     defaultTask.frequencyCount = value;
+    setFrequencyInputs((prev) => ({ ...prev, frequencyCount: value }));
     selectedTasks.map((selectedTask) => {
-      selectedTask.name === defaultTask.name
+      selectedTask.task === defaultTask.task
         ? (selectedTask.frequencyCount = value)
         : null;
       return selectedTask;
     });
   };
 
+  useEffect(() => {
+    console.log(frequencyInputs);
+    setFrequencyInputs({
+      frequency: currentTask.frequency,
+      frequencyCount: currentTask.frequencyCount,
+    });
+    setChecked(currentTask.selected);
+  }, [selectedTasks]);
+
   return (
-    <tr key={task.name}>
+    <tr key={task.task}>
       <td>
         <Checkbox size="md" checked={checked} onChange={handleCheck}></Checkbox>
       </td>
-      <td>{task.name}</td>
+      <td>{task.task}</td>
       <td>
         <Radio.Group
-          defaultValue="Hebdomadaire"
+          defaultValue={"H"}
+          value={frequencyInputs.frequency}
           onChange={updateFrequency}
           withAsterisk
         >
           <Flex wrap="wrap" gap={10} mt="xs">
             {frequencyOptions.map((item) => (
               <Radio
-                value={item.value}
+                key={item.value}
+                value={item.label}
                 labelPosition="right"
                 label={item.label}
-                classNames={{
+                classtasks={{
                   label: classes.radioLabel,
                 }}
               />
@@ -158,6 +170,7 @@ const Row = ({ task, selectedTasks, setSelectedTasks }) => {
       <td>
         <NumberInput
           size="xs"
+          value={frequencyInputs.frequencyCount}
           onChange={updateFrequencyCount}
           defaultValue={1}
           min={1}
