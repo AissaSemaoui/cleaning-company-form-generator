@@ -10,7 +10,7 @@ import {
   Title,
   createStyles,
 } from "@mantine/core";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { FiXCircle } from "react-icons/fi";
 import { defaultSoilType, floorType } from "../utils/data";
 import SingleWorkspace from "./SingleWorkspace";
@@ -37,9 +37,14 @@ const useStayles = createStyles((theme) => ({
 
 function Workspaces() {
   const [opened, { open, close }] = useDisclosure(false);
-
-  const { selectedWorkspaces, setSelectedWorkspaces } = useGlobalContext();
   const { classes } = useStayles();
+
+  const {
+    setWorkspaces,
+    workspaces,
+    selectedWorkspaces,
+    setSelectedWorkspaces,
+  } = useGlobalContext();
 
   return (
     <Box mt="6rem">
@@ -51,23 +56,35 @@ function Workspaces() {
       </Group>
       <Stack>
         <Accordion variant="separated" chevronPosition="left">
-          {selectedWorkspaces.map((workspace) => (
-            <Accordion.Item
-              key={workspace.value}
-              value={workspace.value}
-              className={classes.accordion}
-            >
-              <AccordionControl
-                setSelectedWorkspaces={setSelectedWorkspaces}
-                id={workspace.value}
+          {selectedWorkspaces.map((selectedWorkspace) => {
+            const currentWorkspace = workspaces.find(
+              (workspace) => workspace.id === selectedWorkspace.value
+            );
+
+            return (
+              <Accordion.Item
+                key={selectedWorkspace.value}
+                value={selectedWorkspace.value}
+                className={classes.accordion}
               >
-                {workspace.label}
-              </AccordionControl>
-              <Accordion.Panel>
-                <SingleWorkspace id={workspace.value} tasks={workspace.tasks} />
-              </Accordion.Panel>
-            </Accordion.Item>
-          ))}
+                <AccordionControl
+                  setSelectedWorkspaces={setSelectedWorkspaces}
+                  currentWorkspace={currentWorkspace}
+                  id={selectedWorkspace.value}
+                >
+                  {selectedWorkspace.label}
+                </AccordionControl>
+                <Accordion.Panel>
+                  <SingleWorkspace
+                    id={selectedWorkspace.value}
+                    tasks={selectedWorkspace.tasks}
+                    currentWorkspace={currentWorkspace}
+                    setWorkspaces={setWorkspaces}
+                  />
+                </Accordion.Panel>
+              </Accordion.Item>
+            );
+          })}
           {selectedWorkspaces.length === 0 && (
             <Title order={4} align="center" color="neutral" mt="xl">
               vous n'avez pas encore ajouté d'espace de travail
@@ -86,16 +103,17 @@ function Workspaces() {
 }
 
 const AccordionControl = (props) => {
-  const { workspaces, setWorkspaces, setSelectedWorkspaces } =
-    useGlobalContext();
+  const { setWorkspaces, setSelectedWorkspaces } = useGlobalContext();
+  const { currentWorkspace } = props;
   const { classes } = useStayles();
   const id = props.id;
-  const [soilType, setSoilType] = useState(defaultSoilType);
-  const currentWorkspace =
-    workspaces.find((workspace) => workspace.id === props.id) || {};
+  const [soilType, setSoilType] = useState(
+    currentWorkspace?.soilType || defaultSoilType
+  );
+
+  console.log("soilType inside accordion : ", soilType);
 
   const handleDelete = (event) => {
-    event.stopPropagation();
     setWorkspaces((prev) => [
       ...prev.filter((workspace) => workspace.id !== id),
     ]);
@@ -103,9 +121,10 @@ const AccordionControl = (props) => {
       ...prev.filter((workspace) => workspace.value !== id),
     ]);
   };
-  console.log("workspaces inside workspaces : ", workspaces);
+  // console.log("workspaces inside workspaces : ", currentWorkspace);
 
   const handleChangeSoilType = (value) => {
+    console.log("soiltype value ", value);
     currentWorkspace.soilType = value;
     setSoilType(value);
   };
@@ -135,9 +154,7 @@ const AccordionControl = (props) => {
           size="sm"
           data={floorType}
           value={soilType}
-          defaultValue={defaultSoilType}
           onChange={handleChangeSoilType}
-          onClick={(event) => event.stopPropagation()}
         />
         <ActionIcon variant="subtle" color="red" onClick={handleDelete}>
           <FiXCircle />

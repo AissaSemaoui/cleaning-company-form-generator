@@ -13,7 +13,7 @@ import { FiPlus } from "react-icons/fi";
 import { frequencyOptions } from "../utils/data";
 
 const WorkspaceTable = (props) => {
-  const { selectedTasks, setSelectedTasks, tasks } = props;
+  const { currentWorkspace, selectedTasks, setSelectedTasks, tasks } = props;
   const addTaskRef = useRef(null);
 
   const handleAddTask = () => {
@@ -45,6 +45,7 @@ const WorkspaceTable = (props) => {
       <tbody>
         <Rows
           tasks={tasks}
+          currentWorkspace={currentWorkspace}
           selectedTasks={selectedTasks}
           setSelectedTasks={setSelectedTasks}
         />
@@ -83,130 +84,145 @@ const useStyle = createStyles((theme) => ({
 
 //* ----------------------------- Rows Component ----------------------------- */
 
-const Rows = ({ selectedTasks, setSelectedTasks, tasks }) => {
-  return tasks.map((task) => (
-    <Row
-      key={task.task}
-      task={task}
-      selectedTasks={selectedTasks}
-      setSelectedTasks={setSelectedTasks}
-    />
-  ));
+const Rows = ({ currentWorkspace, selectedTasks, setSelectedTasks, tasks }) => {
+  console.log("inside Rows : ", currentWorkspace, tasks);
+
+  return tasks.map((task) => {
+    const currentTask = currentWorkspace?.selectedTasks.find(
+      (t) => t.task === task.task
+    );
+
+    return (
+      <Row
+        key={task.task}
+        task={task}
+        currentTask={currentTask}
+        selectedTasks={selectedTasks}
+        setSelectedTasks={setSelectedTasks}
+      />
+    );
+  });
 };
 
 //* ------------------------------ Row Component ----------------------------- */
 
-const Row = ({ task, selectedTasks, setSelectedTasks }) => {
-  const { classes } = useStyle();
+const Row = React.memo(
+  ({ task, selectedTasks, setSelectedTasks, currentTask }) => {
+    const { classes } = useStyle();
 
-  const defaultTask = useRef({
-    task: task?.task,
-    selected: false,
-    frequency: "H",
-    frequencyCount: 1,
-  });
+    const defaultTask = useRef({
+      task: task?.task,
+      selected: false,
+      frequency: "H",
+      frequencyCount: 1,
+    });
 
-  const [frequencyInputs, setFrequencyInputs] = useState({
-    frequency: defaultTask.current.frequency,
-    frequencyCount: defaultTask.current.frequencyCount,
-  });
+    const [frequencyInputs, setFrequencyInputs] = useState({
+      frequency: currentTask?.frequency || defaultTask.current.frequency,
+      frequencyCount:
+        currentTask?.frequencyCount || defaultTask.current.frequencyCount,
+    });
 
-  const currentTask =
-    selectedTasks.find((t) => t.task === task.task) || defaultTask.current;
+    console.log("currentTask here : ", currentTask);
 
-  console.log("selected tasks inside row : ", currentTask);
-
-  const [checked, setChecked] = useState(true);
-
-  const removeFromSelectedTasks = (task) => {
-    setSelectedTasks((prev) =>
-      prev.filter((selectedTask) => selectedTask.task !== task.task)
+    const [checked, setChecked] = useState(
+      currentTask?.selected || defaultTask.current.selected
     );
-  };
 
-  const handleCheck = (e) => {
-    setChecked((checked) => !checked);
+    const removeFromSelectedTasks = (task) => {
+      setSelectedTasks((prev) =>
+        prev.filter((selectedTask) => selectedTask.task !== task.task)
+      );
+    };
 
-    if (checked === false) {
-      setSelectedTasks((prev) => [
-        ...prev,
-        { ...defaultTask.current, selected: true },
-      ]);
-    } else {
-      removeFromSelectedTasks(defaultTask.current);
-    }
-  };
+    const handleCheck = (e) => {
+      setChecked((checked) => !checked);
 
-  const updateFrequency = (value) => {
-    defaultTask.current.frequency = value;
-    setFrequencyInputs((prev) => ({ ...prev, frequency: value }));
-    selectedTasks.map((selectedTask) => {
-      selectedTask.task === defaultTask.current.task
-        ? (selectedTask.frequency = value)
-        : null;
-      return selectedTask;
-    });
-  };
+      if (checked === false) {
+        setSelectedTasks((prev) => [
+          ...prev,
+          { ...defaultTask.current, selected: true },
+        ]);
+      } else {
+        removeFromSelectedTasks(defaultTask.current);
+      }
+    };
 
-  const updateFrequencyCount = (value) => {
-    defaultTask.current.frequencyCount = value;
-    setFrequencyInputs((prev) => ({ ...prev, frequencyCount: value }));
-    selectedTasks.map((selectedTask) => {
-      selectedTask.task === defaultTask.current.task
-        ? (selectedTask.frequencyCount = value)
-        : null;
-      return selectedTask;
-    });
-  };
+    const updateFrequency = (value) => {
+      defaultTask.current.frequency = value;
+      setFrequencyInputs((prev) => ({ ...prev, frequency: value }));
+      selectedTasks.map((selectedTask) => {
+        selectedTask.task === defaultTask.current.task
+          ? (selectedTask.frequency = value)
+          : null;
+        return selectedTask;
+      });
+    };
 
-  useEffect(() => {
-    console.log(frequencyInputs);
-    setFrequencyInputs({
-      frequency: currentTask.frequency,
-      frequencyCount: currentTask.frequencyCount,
-    });
-    setChecked(currentTask.selected);
-  }, [selectedTasks]);
+    const updateFrequencyCount = (value) => {
+      defaultTask.current.frequencyCount = value;
+      setFrequencyInputs((prev) => ({ ...prev, frequencyCount: value }));
+      selectedTasks.map((selectedTask) => {
+        selectedTask.task === defaultTask.current.task
+          ? (selectedTask.frequencyCount = value)
+          : null;
+        return selectedTask;
+      });
+    };
 
-  return (
-    <tr key={task.task}>
-      <td className={classes.cursorPointer} onClick={handleCheck}>
-        <Checkbox size="md" checked={checked} onChange={handleCheck}></Checkbox>
-      </td>
-      <td className={classes.cursorPointer} onClick={handleCheck}>
-        {task.task}
-      </td>
-      <td>
-        <Radio.Group
-          defaultValue={"H"}
-          value={frequencyInputs.frequency}
-          onChange={updateFrequency}
-          withAsterisk
-        >
-          <Flex wrap="wrap" gap={10} mt="xs">
-            {frequencyOptions.map((item) => (
-              <Radio
-                key={item.value}
-                value={item.label}
-                labelPosition="right"
-                label={item.label}
-                classNames={{
-                  label: classes.radioLabel,
-                }}
-              />
-            ))}
-          </Flex>
-        </Radio.Group>
-      </td>
-      <td>
-        <NumberInput
-          size="xs"
-          value={frequencyInputs.frequencyCount}
-          onChange={updateFrequencyCount}
-          defaultValue={1}
-          min={1}
-        />
-      </td>
-    </tr>
-  );
-};
+    // useEffect(() => {
+    //   console.log(frequencyInputs);
+    //   setFrequencyInputs({
+    //     frequency: currentTask.frequency,
+    //     frequencyCount: currentTask.frequencyCount,
+    //   });
+    //   setChecked(currentTask.selected);
+    // }, [selectedTasks]);
+
+    return (
+      <tr key={task.task}>
+        <td className={classes.cursorPointer} onClick={handleCheck}>
+          <Checkbox
+            size="md"
+            checked={checked}
+            onChange={handleCheck}
+          ></Checkbox>
+        </td>
+        <td className={classes.cursorPointer} onClick={handleCheck}>
+          {task.task}
+        </td>
+        <td>
+          <Radio.Group
+            defaultValue={"H"}
+            value={frequencyInputs.frequency}
+            onChange={updateFrequency}
+            withAsterisk
+          >
+            <Flex wrap="wrap" gap={10} mt="xs">
+              {frequencyOptions.map((item) => (
+                <Radio
+                  key={item.value}
+                  value={item.label}
+                  labelPosition="right"
+                  label={item.label}
+                  classNames={{
+                    label: classes.radioLabel,
+                  }}
+                />
+              ))}
+            </Flex>
+          </Radio.Group>
+        </td>
+        <td>
+          <NumberInput
+            size="xs"
+            value={frequencyInputs.frequencyCount}
+            onChange={updateFrequencyCount}
+            defaultValue={1}
+            min={1}
+          />
+        </td>
+      </tr>
+    );
+  }
+);

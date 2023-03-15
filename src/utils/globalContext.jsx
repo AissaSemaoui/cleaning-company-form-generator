@@ -30,6 +30,7 @@ function GlobalContextWrapper({ children }) {
   useEffect(() => {
     setFullInformation({ generalInfo, workspaces, tools });
     validateGeneratorAccess();
+    console.log("inside global useEffect : ", fullInformation);
   }, [generalInfo, workspaces, tools]);
 
   function validateGeneratorAccess() {

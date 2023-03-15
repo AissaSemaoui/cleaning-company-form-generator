@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useGlobalContext } from "../utils/globalContext";
 import { Box } from "@mantine/core";
 import WorkspaceTable from "./WorkspaceTable";
@@ -7,40 +7,40 @@ import DropFiles from "./DropFiles";
 import { defaultSoilType } from "../utils/data";
 import { useDidUpdate } from "@mantine/hooks";
 
-function SingleWorkspace({ tasks, id }) {
-  const { setWorkspaces, workspaces } = useGlobalContext();
-
-  const [selectedTasks, setSelectedTasks] = useState([]);
+function SingleWorkspace({ tasks, id, currentWorkspace, setWorkspaces }) {
+  const [selectedTasks, setSelectedTasks] = useState(
+    currentWorkspace?.selectedTasks || []
+  );
   const [images, setImages] = useState([]);
   const [comment, setComment] = useState("");
 
-  console.log("workspaces inside single workspace: ", workspaces);
+  // console.log("workspaces inside single workspace: ", workspaces);
 
-  useEffect(() => {
-    const currentWorkspace = workspaces.find(
-      (workspace) => workspace.id === id
-    );
-    setSelectedTasks(currentWorkspace?.selectedTasks || []);
-  }, []);
+  // useEffect(() => {
+  //   const currentWorkspace = workspaces.find(
+  //     (workspace) => workspace.id === id
+  //   );
+  //   setSelectedTasks(currentWorkspace?.selectedTasks || []);
+  // }, []);
 
-  useDidUpdate(() => {
-    const data = {
-      id,
-      selectedTasks,
-      images,
-      comment,
-      soilType: defaultSoilType,
-    };
+  const data = {
+    id,
+    selectedTasks,
+    images,
+    comment,
+  };
+  console.log("data inside single workspace: ", currentWorkspace, data);
+  if (currentWorkspace) {
+    currentWorkspace.id = id;
+    currentWorkspace.selectedTasks = selectedTasks;
+    currentWorkspace.comment = comment;
+    currentWorkspace.images = images;
+  } else {
     setWorkspaces((prev) => {
-      const workspaceIndex = prev.findIndex((workspace) => workspace.id === id);
-      if (workspaceIndex !== -1) {
-        prev[workspaceIndex] = data;
-      } else {
-        prev.push(data);
-      }
-      return [...prev];
+      prev.push(data);
+      return prev;
     });
-  }, [selectedTasks, images, comment]);
+  }
 
   return (
     <>
@@ -53,6 +53,7 @@ function SingleWorkspace({ tasks, id }) {
       >
         <WorkspaceTable
           tasks={tasks}
+          currentWorkspace={currentWorkspace}
           selectedTasks={selectedTasks}
           setSelectedTasks={setSelectedTasks}
         />

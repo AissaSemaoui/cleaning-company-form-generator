@@ -27,8 +27,6 @@ function SelectWorkspacesModal({
   const allOptions = useRef([]);
   const baseOptions = workspacesOptions;
 
-  console.log("selectedWorkspaces inside modal : ", selectedWorkspaces);
-
   const handleSelect = (value) => {
     const selectedOption = baseOptions.find((option) =>
       value[value.length - 1].startsWith(option.value)
@@ -44,7 +42,7 @@ function SelectWorkspacesModal({
       setSelectedWorkspaces((prev) => [
         ...prev,
         {
-          ...selectedOption,
+          // ...selectedOption,
           value: `${selectedOption.value} ${duplicateCount + 1}`,
           label: `${selectedOption.value} ${duplicateCount + 1}`,
           tasks: [...selectedOption.tasks], // add base option tasks
