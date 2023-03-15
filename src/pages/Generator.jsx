@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Navbar from "../components/Navbar";
-import { Button, Container } from "@mantine/core";
+import { Button, Container, Title } from "@mantine/core";
 // import PdfTemplate from "../components/PdfTemplate";
 import { Font, Image, PDFViewer, View } from "@react-pdf/renderer";
 import { Document, Page, StyleSheet, Text } from "@react-pdf/renderer";
@@ -31,7 +31,7 @@ function Generator() {
   const BackToFormButton = () => {
     return (
       <Link to="/">
-        <Button variant="outline">Back to form</Button>
+        <Button variant="outline">Retour au formulaire</Button>
       </Link>
     );
   };
@@ -42,8 +42,10 @@ function Generator() {
         <Navbar Button={<BackToFormButton />} />
       </header>
       <main>
-        <Container>
-          <h1>Generator</h1>
+        <Container my="md">
+          <Title order={1} size="h2" my="sm">
+            Générateur de cahier des charges
+          </Title>
           <PDFViewer width="100%" height="800px">
             <PdfTemplate
               setTriggerRender={setTriggerRender}
@@ -128,6 +130,7 @@ function PdfTemplate({ fullInformation }) {
   const {
     fullName,
     contactInfo,
+    address,
     surface,
     roomCount,
     preferredDays,
@@ -137,18 +140,29 @@ function PdfTemplate({ fullInformation }) {
 
   console.log("fullInformation inside Generator.jsx: ", fullInformation);
 
+  const generateDocumentTitle = () => {
+    let title = "";
+    title += fullName;
+    let currentDate = new Date();
+    title += `_${currentDate.getDate()}/${currentDate.getMonth()}/${currentDate.getFullYear()}`;
+    return title;
+  };
+
   return (
-    <Document>
+    <Document title={generateDocumentTitle()}>
       <Page style={styles.page} wrap={true}>
         <Text style={styles.h1}>Cahier des charges Nettoyage</Text>
         <View style={styles.container} wrap={true}>
           <View>
             {/* <Text style={styles.title}>Locaux ou domicile</Text> */}
             <Text style={styles.title}>
-              le nom : <Text style={styles.text}>{fullName} </Text>
+              Le nom : <Text style={styles.text}>{fullName} </Text>
             </Text>
             <Text style={styles.title}>
-              Tel : <Text style={styles.text}>{contactInfo} </Text>
+              Le Contact : <Text style={styles.text}>{contactInfo} </Text>
+            </Text>
+            <Text style={styles.title}>
+              Address : <Text style={styles.text}>{address} </Text>
             </Text>
             <Text style={styles.title}>
               Surface : <Text style={styles.text}>{surface} m²</Text>
@@ -186,26 +200,36 @@ function PdfTemplate({ fullInformation }) {
               <Text style={styles.text}> T = Trimestrielle </Text>
               <Text style={styles.text}> A = Annuelle </Text>
             </View>
-            {workspaces?.map((workspace) => {
-              console.log("workspace inside PdfTemplate: ", workspace);
-              return (
-                <View>
+            {workspaces?.map(
+              (workspace) => {
+                console.log("workspace inside PdfTemplate: ", workspace);
+                return workspace.selectedTasks.length > 0 ||
+                  workspace.comment !== "" ||
+                  workspace.images?.length > 0 ? (
                   <View>
-                    <WorkspaceTablePdf data={workspace} />
+                    {workspace.selectedTasks.length > 0 ? (
+                      <View>
+                        <WorkspaceTablePdf data={workspace} />
+                      </View>
+                    ) : (
+                      <Text style={styles.text}>Aucun Tache</Text>
+                    )}
+                    {workspace?.comment && (
+                      <Text style={{ ...styles.mt, ...styles.text }}>
+                        note : {workspace.comment}
+                      </Text>
+                    )}
+                    <View style={styles.imagesWrapper}>
+                      {workspace.images?.map((image) => (
+                        <Image style={styles.image} src={image} />
+                      ))}
+                    </View>
                   </View>
-                  {workspace?.comment && (
-                    <Text style={{ ...styles.mt, ...styles.text }}>
-                      note : {workspace.comment}
-                    </Text>
-                  )}
-                  <View style={styles.imagesWrapper}>
-                    {workspace.images?.map((image) => (
-                      <Image style={styles.image} src={image} />
-                    ))}
-                  </View>
-                </View>
-              );
-            })}
+                ) : null;
+              }
+
+              // }
+            )}
           </View>
           <View style={styles.mt}>
             <Text style={styles.title}>les outils disponible : </Text>

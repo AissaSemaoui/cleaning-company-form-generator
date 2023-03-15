@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Dropzone } from "@mantine/dropzone";
+import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import {
   ActionIcon,
   Box,
@@ -45,13 +45,12 @@ function DropFiles(props) {
       <Dropzone
         openRef={openRef}
         onDrop={hanldeDrop}
-        activateOnClick={false}
+        activateOnClick={true}
+        accept={IMAGE_MIME_TYPE}
         styles={{ inner: { pointerEvents: "all" } }}
       >
         <Group position="center">
-          <Button variant="light" onClick={() => openRef.current()}>
-            Select images
-          </Button>
+          <Button variant="subtle">Selectionner des images</Button>
         </Group>
       </Dropzone>
       <Box mt="sm">

@@ -25,13 +25,21 @@ function WorkspaceTable(props) {
   };
 
   return (
-    <Table verticalSpacing={10} withBorder highlightOnHover>
+    <Table
+      miw={{
+        xs: 550,
+        sm: "100%",
+      }}
+      verticalSpacing={10}
+      withBorder
+      highlightOnHover
+    >
       <thead>
         <tr>
           <th></th>
           <th style={{ width: "60%" }}>Le nom de tache</th>
-          <th style={{ width: "25%" }}>Frequency</th>
-          <th style={{ witdth: "15%" }}>number</th>
+          <th style={{ width: "25%" }}>Fréquence</th>
+          <th style={{ witdth: "15%" }}>Le nombre</th>
         </tr>
       </thead>
       <tbody>

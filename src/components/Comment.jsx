@@ -36,14 +36,14 @@ function Comment(props) {
           <Textarea
             ref={commentRef}
             className={classes.commentInput}
-            label="Ajouter un commentaire"
-            placeholder="Ajouter un commentaire"
+            label="Ajouter une remarque"
+            placeholder="Votre remarque ici"
             autosize
             minRows={2}
           />
           <Stack spacing={5}>
             <Button size="xs" variant="light" onClick={handleSave}>
-              Save
+              sauvegarder
             </Button>
           </Stack>
         </>
@@ -51,14 +51,14 @@ function Comment(props) {
         <>
           <Stack spacing={5} w="100%">
             <Text size="sm" color="neutral.6" weight="500">
-              Commentaire
+              Remarque
             </Text>
             <Paper p="md" withBorder>
               <Text size="sm">{comment}</Text>
             </Paper>
           </Stack>
           <Button size="xs" variant="light" color="red" onClick={handleDelete}>
-            delete
+            supprimer
           </Button>
         </>
       )}

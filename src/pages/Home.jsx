@@ -4,6 +4,9 @@ import {
   Box,
   Button,
   Container,
+  Flex,
+  Group,
+  Paper,
   Text,
   Title,
   createStyles,
@@ -11,23 +14,66 @@ import {
 import Workspaces from "../components/Workspaces";
 import GeneralInfo from "../components/GeneralInfo";
 import Tools from "../components/Tools";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { defaultGeneralInfo, useGlobalContext } from "../utils/globalContext";
 
 const useStyle = createStyles((theme) => ({
   main: {
     minHeight: "100vh",
     padding: "5% 0 15%",
   },
+  generateBar: {
+    position: "fixed",
+    bottom: 0,
+    left: 0,
+    width: "100%",
+    padding: "1rem",
+    backgroundColor: theme.colors.white,
+    boxShadow: "0 -1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+    borderRadius: 0,
+    zIndex: 100,
+  },
 }));
 
 function Home() {
   const { classes } = useStyle();
+  const {
+    generatorAccess,
+    uploadToFirebase,
+    setTools,
+    setWorkspaces,
+    setGeneralInfo,
+  } = useGlobalContext();
+
+  const navigate = useNavigate();
+
+  const handleGenerate = async () => {
+    await uploadToFirebase()
+      .then((res) => {
+        console.log("result is here : ", res);
+        navigate("/generated_result");
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const handleReset = () => {
+    setGeneralInfo(defaultGeneralInfo);
+    setWorkspaces([]);
+    setTools({
+      tools: [],
+      comment: "",
+    });
+  };
 
   const GenerateButton = () => {
     return (
-      <Link to="/generated_result">
-        <Button variant="outline">Preview</Button>
-      </Link>
+      <Button
+        variant="outline"
+        disabled={generatorAccess}
+        onClick={handleGenerate}
+      >
+        Aperçu
+      </Button>
     );
   };
 
@@ -52,6 +98,28 @@ function Home() {
             <Workspaces />
             <Tools />
           </div>
+          <Paper className={classes.generateBar} justify="center">
+            <Container size="lg">
+              <Group noWrap>
+                <Button variant="outline" color="red" onClick={handleReset}>
+                  Reset
+                </Button>
+                <Button
+                  variant="gradient"
+                  gradient={{
+                    from: "blue.6",
+                    to: "blue.4",
+                  }}
+                  fullWidth
+                  size="md"
+                  disabled={generatorAccess}
+                  onClick={handleGenerate}
+                >
+                  Générer le planning
+                </Button>
+              </Group>
+            </Container>
+          </Paper>
         </main>
       </Container>
     </>

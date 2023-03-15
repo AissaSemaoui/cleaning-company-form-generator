@@ -45,9 +45,9 @@ function Workspaces() {
     <Box mt="6rem">
       <Group position="apart" mb="xl">
         <Title order={2} weight={500}>
-          Workspaces
+          Les espace a nettoyer
         </Title>
-        <Button onClick={open}>Ajouter un espace de travail</Button>
+        <Button onClick={open}>Ajouter un espace</Button>
       </Group>
       <Stack>
         <Accordion variant="separated" chevronPosition="left">

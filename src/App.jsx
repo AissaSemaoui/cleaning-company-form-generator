@@ -75,8 +75,7 @@ const theme = {
   },
 
   breakpoints: {
-    xs: 300,
-    sm: 560,
+    xs: "26em",
   },
 
   colors: {

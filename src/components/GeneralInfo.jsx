@@ -8,6 +8,7 @@ import {
   Paper,
   Select,
   TextInput,
+  Textarea,
   Title,
   createStyles,
 } from "@mantine/core";
@@ -20,6 +21,14 @@ const useStyle = createStyles((theme) => ({
     maxWidth: "100%",
     width: "49%",
   },
+  singleInput: {
+    minWidth: 280,
+    maxWidth: "100%",
+    width: "49%",
+    [`@media (max-width: ${theme.breakpoints.sm})`]: {
+      width: "100%",
+    },
+  },
 }));
 
 const GeneralInfo = () => {
@@ -30,6 +39,7 @@ const GeneralInfo = () => {
   const defaultGeneralInfo = {
     fullName: "", // nom
     contactInfo: "", // email / tel
+    address: "", // adresse
     surface: "", // m²
     roomCount: "", // nombre de pièces
     preferredDays: [], // jours d'intervention souhaitée
@@ -39,6 +49,23 @@ const GeneralInfo = () => {
 
   const form = useForm({
     initialValues: defaultGeneralInfo,
+    validate: {
+      fullName: (value) => (value.length > 0 ? null : "Nom est obligatoire"),
+      contactInfo: (value) =>
+        value.length > 0 ? null : "Téléphone ou email est obligatoire",
+      address: (value) => (value.length > 0 ? null : "Adresse est obligatoire"),
+      surface: (value) => (value > 0 ? null : "Surface est obligatoire"),
+      roomCount: (value) =>
+        value > 0 ? null : "Nombre de pièces est obligatoire",
+      preferredDays: (value) =>
+        value.length > 0
+          ? null
+          : "Jours d'intervention souhaitée est obligatoire",
+      spaceType: (value) =>
+        value.length > 0 ? null : "Type d'espace est obligatoire",
+      serviceFrequency: (value) =>
+        value.length > 0 ? null : "Fréquence de service est obligatoire",
+    },
   });
 
   const handleSubmit = (values) => {
@@ -56,13 +83,13 @@ const GeneralInfo = () => {
     <Paper shadow="xs" mt="3rem" p="md" bg="background.1">
       <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
         <Title order={2} weight={500} pb="md">
-          General Info
+          Informations générales
         </Title>
         <Flex gap="md" direction="column">
           <Group noWrap={false} grow>
             <TextInput
-              placeholder="Your name"
-              label="Full name"
+              placeholder="ex: John Doe"
+              label="Nom complet"
               name="fullName"
               className={classes.input}
               withAsterisk
@@ -79,6 +106,16 @@ const GeneralInfo = () => {
               {...form.getInputProps("contactInfo")}
             />
           </Group>
+          <TextInput
+            placeholder="ex: 12 rue de la paix, 75000 Paris"
+            label="Adresse du lieu"
+            name="address"
+            mb="md"
+            className={classes.singleInput}
+            withAsterisk
+            disabled={disabled}
+            {...form.getInputProps("address")}
+          />
           <Group noWrap={false} grow>
             <NumberInput
               placeholder="m²"
@@ -103,7 +140,7 @@ const GeneralInfo = () => {
             <MultiSelect
               data={["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"]}
               placeholder="jour d'intervention souhaitée"
-              label="journée d'intervention souhaitée"
+              label="Journée d'intervention souhaitée"
               name="preferredDays"
               className={classes.input}
               withAsterisk
@@ -113,7 +150,7 @@ const GeneralInfo = () => {
             <Select
               data={["professionnel", "particulier"]}
               placeholder="professionnel / particulier"
-              label="l'espace à nettoyer est-il"
+              label="L'espace à nettoyer est-il"
               name="spaceType"
               className={classes.input}
               withAsterisk
@@ -121,22 +158,20 @@ const GeneralInfo = () => {
               {...form.getInputProps("spaceType")}
             />
           </Group>
-          <Group grow>
-            <Select
-              data={["ponctuel", "recurrent"]}
-              placeholder="ponctuel / recurrent"
-              label="le nettoyage est-il"
-              name="serviceFrequency"
-              className={classes.input}
-              withAsterisk
-              disabled={disabled}
-              {...form.getInputProps("serviceFrequency")}
-            />
-          </Group>
+          <Select
+            data={["ponctuel", "recurrent"]}
+            placeholder="ponctuel / recurrent"
+            label="Le nettoyage est-il"
+            name="serviceFrequency"
+            className={classes.singleInput}
+            withAsterisk
+            disabled={disabled}
+            {...form.getInputProps("serviceFrequency")}
+          />
           <Group position="right">
             {disabled ? (
               <Button type="button" onClick={handleEdit}>
-                Edit
+                Modifier
               </Button>
             ) : (
               <Button type="submit">Ajouter</Button>

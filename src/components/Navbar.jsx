@@ -23,7 +23,7 @@ function Navbar({ Button }) {
   return (
     <div className={classes.nav}>
       <Title order={2} size="h3">
-        ClickCv
+        Cleaning Company
       </Title>
       {Button}
     </div>
