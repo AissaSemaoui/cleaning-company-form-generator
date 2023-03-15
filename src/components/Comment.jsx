@@ -1,8 +1,6 @@
 import {
-  Box,
   Button,
   Flex,
-  Group,
   Paper,
   Stack,
   Text,
@@ -18,12 +16,15 @@ const useStyle = createStyles((theme) => ({
 }));
 
 function Comment(props) {
-  const { comment, setComment } = props;
   const { classes } = useStyle();
+  const { comment, setComment } = props;
 
   const commentRef = useRef();
 
-  const handleSave = () => setComment(commentRef.current.value);
+  const handleSave = () => {
+    if (commentRef.current.value === "") return;
+    setComment(commentRef.current.value);
+  };
   const handleDelete = () => {
     setComment("");
     commentRef.current.value = "";
@@ -36,6 +37,7 @@ function Comment(props) {
           <Textarea
             ref={commentRef}
             className={classes.commentInput}
+            defaultValue={comment}
             label="Ajouter une remarque"
             placeholder="Votre remarque ici"
             autosize

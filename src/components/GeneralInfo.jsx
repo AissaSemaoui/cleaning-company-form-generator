@@ -14,6 +14,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useGlobalContext } from "../utils/globalContext";
+import { useDidUpdate } from "@mantine/hooks";
 
 const useStyle = createStyles((theme) => ({
   input: {
@@ -32,7 +33,7 @@ const useStyle = createStyles((theme) => ({
 }));
 
 const GeneralInfo = () => {
-  const { setGeneralInfo } = useGlobalContext();
+  const { setGeneralInfo, generalInfo } = useGlobalContext();
   const [disabled, setDisabled] = useState(false);
   const { classes } = useStyle();
 
@@ -48,7 +49,7 @@ const GeneralInfo = () => {
   };
 
   const form = useForm({
-    initialValues: defaultGeneralInfo,
+    initialValues: generalInfo || defaultGeneralInfo,
     validate: {
       fullName: (value) => (value.length > 0 ? null : "Nom est obligatoire"),
       contactInfo: (value) =>
@@ -77,7 +78,26 @@ const GeneralInfo = () => {
     e.preventDefault();
     setDisabled(false);
   };
-  console.log(disabled);
+
+  const isFormEmpty = () => {
+    return (
+      generalInfo.fullName === "" &&
+      generalInfo.contactInfo === "" &&
+      generalInfo.address === "" &&
+      generalInfo.surface === "" &&
+      generalInfo.roomCount === "" &&
+      generalInfo.preferredDays.length === 0 &&
+      generalInfo.spaceType === "" &&
+      generalInfo.serviceFrequency === ""
+    );
+  };
+
+  useDidUpdate(() => {
+    if (isFormEmpty()) {
+      setDisabled(false);
+      form.reset();
+    }
+  }, [generalInfo]);
 
   return (
     <Paper shadow="xs" mt="3rem" p="md" bg="background.1">

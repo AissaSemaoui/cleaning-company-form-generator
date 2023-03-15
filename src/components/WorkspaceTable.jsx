@@ -85,8 +85,6 @@ const useStyle = createStyles((theme) => ({
 //* ----------------------------- Rows Component ----------------------------- */
 
 const Rows = ({ currentWorkspace, selectedTasks, setSelectedTasks, tasks }) => {
-  console.log("inside Rows : ", currentWorkspace, tasks);
-
   return tasks.map((task) => {
     const currentTask = currentWorkspace?.selectedTasks.find(
       (t) => t.task === task.task
@@ -122,8 +120,6 @@ const Row = React.memo(
       frequencyCount:
         currentTask?.frequencyCount || defaultTask.current.frequencyCount,
     });
-
-    console.log("currentTask here : ", currentTask);
 
     const [checked, setChecked] = useState(
       currentTask?.selected || defaultTask.current.selected
@@ -169,15 +165,6 @@ const Row = React.memo(
         return selectedTask;
       });
     };
-
-    // useEffect(() => {
-    //   console.log(frequencyInputs);
-    //   setFrequencyInputs({
-    //     frequency: currentTask.frequency,
-    //     frequencyCount: currentTask.frequencyCount,
-    //   });
-    //   setChecked(currentTask.selected);
-    // }, [selectedTasks]);
 
     return (
       <tr key={task.task}>

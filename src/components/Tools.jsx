@@ -6,7 +6,7 @@ import { toolsOptions } from "../utils/data";
 
 function Tools() {
   const { tools, setTools } = useGlobalContext();
-  const [comment, setComment] = useState("");
+  const [comment, setComment] = useState(tools?.comment || "");
 
   tools.comment = comment;
 
@@ -27,7 +27,7 @@ function Tools() {
         >
           <Flex wrap="wrap" mt="md" mb="xl" gap="xl">
             {toolsOptions.map((tool) => (
-              <Checkbox value={tool} label={tool}></Checkbox>
+              <Checkbox key={tool} value={tool} label={tool}></Checkbox>
             ))}
           </Flex>
         </Checkbox.Group>

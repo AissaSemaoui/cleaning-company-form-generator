@@ -8,7 +8,13 @@ import {
   Stack,
   createStyles,
 } from "@mantine/core";
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { workspacesOptions } from "../utils/data";
 
 const useStyle = createStyles({
@@ -24,49 +30,61 @@ function SelectWorkspacesModal({
   setSelectedWorkspaces,
 }) {
   const { classes } = useStyle();
-  const allOptions = useRef([]);
   const baseOptions = workspacesOptions;
 
-  const handleSelect = (value) => {
-    const selectedOption = baseOptions.find((option) =>
-      value[value.length - 1].startsWith(option.value)
-    );
+  const handleSelect = useCallback(
+    (value) => {
+      const lastValue = value[value.length - 1];
+      let selectedOption = null;
+      for (let i = 0; i < baseOptions.length; i++) {
+        const option = baseOptions[i];
+        if (lastValue.startsWith(option.value)) {
+          selectedOption = option;
+          break;
+        }
+      }
+      if (!selectedOption) {
+        return;
+      }
+      const duplicateCount = selectedWorkspaces.some((option) =>
+        option.value.startsWith(selectedOption.value)
+      )
+        ? selectedWorkspaces.filter((option) =>
+            option.value.startsWith(selectedOption.value)
+          ).length
+        : 0;
+      if (duplicateCount > 0) {
+        setSelectedWorkspaces((prev) => [
+          ...prev,
+          {
+            value: `${selectedOption.value} ${duplicateCount + 1}`,
+            label: `${selectedOption.value} ${duplicateCount + 1}`,
+            tasks: [...selectedOption.tasks], // add base option tasks
+          },
+        ]);
+      } else {
+        setSelectedWorkspaces((prev) => [...prev, selectedOption]);
+      }
+    },
+    [selectedWorkspaces]
+  );
 
-    if (!selectedOption) return;
-
-    const duplicateCount = selectedWorkspaces.filter((option) =>
-      option.value.startsWith(selectedOption.value)
-    ).length;
-
-    if (duplicateCount > 0) {
-      setSelectedWorkspaces((prev) => [
-        ...prev,
-        {
-          // ...selectedOption,
-          value: `${selectedOption.value} ${duplicateCount + 1}`,
-          label: `${selectedOption.value} ${duplicateCount + 1}`,
-          tasks: [...selectedOption.tasks], // add base option tasks
-        },
-      ]);
-    } else {
-      setSelectedWorkspaces((prev) => [...prev, selectedOption]);
-    }
-  };
-
-  allOptions.current = baseOptions.flatMap((option) => {
-    const duplicateCount = selectedWorkspaces.filter((selected) =>
-      selected.value.startsWith(option.value)
-    ).length;
-    const options = [{ ...option }];
-    for (let i = 2; i <= duplicateCount + 1; i++) {
-      options.push({
-        value: `${option.value} ${i}`,
-        label: `${option.value} ${i}`,
-        tasks: option.tasks, // add base option tasks
-      });
-    }
-    return options;
-  });
+  let allOptions = useMemo(() => {
+    return baseOptions.flatMap((option) => {
+      const duplicateCount = selectedWorkspaces.filter((selected) =>
+        selected.value.startsWith(option.value)
+      ).length;
+      const options = [{ ...option }];
+      for (let i = 2; i <= duplicateCount + 1; i++) {
+        options.push({
+          value: `${option.value} ${i}`,
+          label: `${option.value} ${i}`,
+          tasks: option.tasks, // add base option tasks
+        });
+      }
+      return options;
+    });
+  }, [selectedWorkspaces]);
 
   return (
     <Modal
@@ -80,7 +98,7 @@ function SelectWorkspacesModal({
     >
       <Stack>
         <MultiSelect
-          data={allOptions.current}
+          data={allOptions}
           placeholder="Select workspaces"
           label="Workspaces"
           onChange={handleSelect}

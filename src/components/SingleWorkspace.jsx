@@ -12,24 +12,15 @@ function SingleWorkspace({ tasks, id, currentWorkspace, setWorkspaces }) {
     currentWorkspace?.selectedTasks || []
   );
   const [images, setImages] = useState([]);
-  const [comment, setComment] = useState("");
-
-  // console.log("workspaces inside single workspace: ", workspaces);
-
-  // useEffect(() => {
-  //   const currentWorkspace = workspaces.find(
-  //     (workspace) => workspace.id === id
-  //   );
-  //   setSelectedTasks(currentWorkspace?.selectedTasks || []);
-  // }, []);
+  const [comment, setComment] = useState(currentWorkspace?.comment || "");
 
   const data = {
     id,
     selectedTasks,
     images,
     comment,
+    soilType: defaultSoilType,
   };
-  console.log("data inside single workspace: ", currentWorkspace, data);
   if (currentWorkspace) {
     currentWorkspace.id = id;
     currentWorkspace.selectedTasks = selectedTasks;

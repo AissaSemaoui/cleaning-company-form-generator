@@ -111,8 +111,6 @@ const AccordionControl = (props) => {
     currentWorkspace?.soilType || defaultSoilType
   );
 
-  console.log("soilType inside accordion : ", soilType);
-
   const handleDelete = (event) => {
     setWorkspaces((prev) => [
       ...prev.filter((workspace) => workspace.id !== id),
@@ -121,10 +119,8 @@ const AccordionControl = (props) => {
       ...prev.filter((workspace) => workspace.value !== id),
     ]);
   };
-  // console.log("workspaces inside workspaces : ", currentWorkspace);
 
   const handleChangeSoilType = (value) => {
-    console.log("soiltype value ", value);
     currentWorkspace.soilType = value;
     setSoilType(value);
   };

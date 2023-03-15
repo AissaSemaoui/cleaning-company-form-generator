@@ -15,7 +15,11 @@ import Workspaces from "../components/Workspaces";
 import GeneralInfo from "../components/GeneralInfo";
 import Tools from "../components/Tools";
 import { useNavigate } from "react-router-dom";
-import { defaultGeneralInfo, useGlobalContext } from "../utils/globalContext";
+import {
+  defaultFullInformation,
+  defaultGeneralInfo,
+  useGlobalContext,
+} from "../utils/globalContext";
 
 const useStyle = createStyles((theme) => ({
   main: {
@@ -43,26 +47,28 @@ function Home() {
     setTools,
     setWorkspaces,
     setGeneralInfo,
+    collectFullInfo,
+    setSelectedWorkspaces,
   } = useGlobalContext();
 
   const navigate = useNavigate();
 
   const handleGenerate = async () => {
-    await uploadToFirebase()
-      .then((res) => {
-        console.log("result is here : ", res);
-        navigate("/generated_result");
-      })
-      .catch((err) => console.log(err));
+    collectFullInfo();
+    await uploadToFirebase().then((res) => {
+      navigate("/generated_result");
+    });
   };
 
   const handleReset = () => {
+    // setFullInformation(defaultFullInformation);
     setGeneralInfo(defaultGeneralInfo);
     setWorkspaces([]);
     setTools({
       tools: [],
       comment: "",
     });
+    setSelectedWorkspaces([]);
   };
 
   const GenerateButton = () => {

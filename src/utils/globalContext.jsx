@@ -16,6 +16,15 @@ export const defaultGeneralInfo = {
   serviceFrequency: "", // ponctuel / recurrent
 };
 
+export const defaultFullInformation = {
+  generalInfo: defaultGeneralInfo,
+  workspaces: [],
+  tools: {
+    tools: [],
+    comment: "",
+  },
+};
+
 function GlobalContextWrapper({ children }) {
   const [generalInfo, setGeneralInfo] = useState(defaultGeneralInfo);
   const [workspaces, setWorkspaces] = useState([]);
@@ -23,18 +32,17 @@ function GlobalContextWrapper({ children }) {
     tools: [],
     comment: "",
   });
-  const [fullInformation, setFullInformation] = useState({});
+  const [fullInformation, setFullInformation] = useState(
+    defaultFullInformation
+  );
   const [selectedWorkspaces, setSelectedWorkspaces] = useState([]);
   const [generatorAccess, setGeneratorAccess] = useState(false);
 
   useEffect(() => {
-    setFullInformation({ generalInfo, workspaces, tools });
     validateGeneratorAccess();
-    console.log("inside global useEffect : ", fullInformation);
   }, [generalInfo, workspaces, tools]);
 
   function validateGeneratorAccess() {
-    console.log("inside validateGeneratorAccess", generatorAccess);
     if (generalInfo.fullName.length > 0 && workspaces.length > 0) {
       setGeneratorAccess(false);
     } else {
@@ -51,14 +59,15 @@ function GlobalContextWrapper({ children }) {
   };
 
   const uploadToFirebase = async () => {
-    console.log("upload to firebase");
     return setDoc(
       doc(db, "collectedData", generateDocumentId()),
       fullInformation
     );
   };
 
-  console.log("inside global context wrapper", fullInformation);
+  const collectFullInfo = () => {
+    setFullInformation({ generalInfo, workspaces, tools });
+  };
 
   return (
     <GlobalContext.Provider
@@ -75,6 +84,7 @@ function GlobalContextWrapper({ children }) {
         setSelectedWorkspaces,
         generatorAccess,
         uploadToFirebase,
+        collectFullInfo,
       }}
     >
       {children}

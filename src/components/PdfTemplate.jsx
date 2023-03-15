@@ -94,8 +94,6 @@ function PdfTemplate({ fullInformation }) {
     serviceFrequency,
   } = generalInfo || {};
 
-  console.log("fullInformation inside Generator.jsx: ", fullInformation);
-
   const generateDocumentTitle = () => {
     let title = "";
     title += fullName;
@@ -157,7 +155,6 @@ function PdfTemplate({ fullInformation }) {
               <Text style={styles.text}> A = Annuelle </Text>
             </View>
             {workspaces?.map((workspace) => {
-              console.log("workspace inside PdfTemplate: ", workspace);
               return workspace.selectedTasks.length > 0 ||
                 workspace.comment !== "" ||
                 workspace.images?.length > 0 ? (
@@ -171,7 +168,7 @@ function PdfTemplate({ fullInformation }) {
                   )}
                   {workspace?.comment && (
                     <Text style={{ ...styles.mt, ...styles.text }}>
-                      note : {workspace.comment}
+                      Remarque : {workspace.comment}
                     </Text>
                   )}
                   <View style={styles.imagesWrapper}>
@@ -193,7 +190,7 @@ function PdfTemplate({ fullInformation }) {
                 : "Aucun"}
             </Text>
             {tools?.comment && (
-              <Text style={styles.text}>note : {tools?.comment}</Text>
+              <Text style={styles.text}>Remarque : {tools?.comment}</Text>
             )}
           </View>
         </View>
@@ -201,8 +198,6 @@ function PdfTemplate({ fullInformation }) {
     </Document>
   );
 }
-
-
 
 //* --------------------- Workspaces Table Pdf Component --------------------- */
 
@@ -274,6 +269,5 @@ const WorkspaceTablePdf = ({ data }) => {
     </View>
   );
 };
-
 
 export default PdfTemplate;
