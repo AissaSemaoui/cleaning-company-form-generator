@@ -96,4 +96,4 @@ function SelectWorkspacesModal({
   );
 }
 
-export default SelectWorkspacesModal;
+export default React.memo(SelectWorkspacesModal);

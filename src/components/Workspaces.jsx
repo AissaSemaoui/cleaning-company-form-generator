@@ -85,8 +85,6 @@ function Workspaces() {
   );
 }
 
-export default Workspaces;
-
 const AccordionControl = (props) => {
   const { workspaces, setWorkspaces, setSelectedWorkspaces } =
     useGlobalContext();
@@ -111,10 +109,6 @@ const AccordionControl = (props) => {
     currentWorkspace.soilType = value;
     setSoilType(value);
   };
-
-  // useEffect(() => {
-  //   setSoilType(currentWorkspace.soilType);
-  // }, [currentWorkspace.soilType]);
 
   return (
     <Flex
@@ -152,3 +146,5 @@ const AccordionControl = (props) => {
     </Flex>
   );
 };
+
+export default Workspaces;

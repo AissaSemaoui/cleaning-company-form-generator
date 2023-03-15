@@ -14,7 +14,7 @@ import {
 import Workspaces from "../components/Workspaces";
 import GeneralInfo from "../components/GeneralInfo";
 import Tools from "../components/Tools";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { defaultGeneralInfo, useGlobalContext } from "../utils/globalContext";
 
 const useStyle = createStyles((theme) => ({

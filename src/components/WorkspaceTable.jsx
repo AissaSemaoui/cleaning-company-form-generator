@@ -12,7 +12,7 @@ import {
 import { FiPlus } from "react-icons/fi";
 import { frequencyOptions } from "../utils/data";
 
-function WorkspaceTable(props) {
+const WorkspaceTable = (props) => {
   const { selectedTasks, setSelectedTasks, tasks } = props;
   const addTaskRef = useRef(null);
 
@@ -68,7 +68,7 @@ function WorkspaceTable(props) {
       </tbody>
     </Table>
   );
-}
+};
 
 export default WorkspaceTable;
 
