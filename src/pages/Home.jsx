@@ -77,11 +77,7 @@ function Home() {
 
   const GenerateButton = () => {
     return (
-      <Button
-        variant="outline"
-        // disabled={generatorAccess}
-        onClick={handlePreview}
-      >
+      <Button variant="outline" onClick={handlePreview}>
         Aperçu
       </Button>
     );

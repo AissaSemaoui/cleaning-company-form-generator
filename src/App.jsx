@@ -5,6 +5,7 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 
 // Import Pages
 import Home from "./pages/Home";
+import { Notifications } from "@mantine/notifications";
 const Generator = lazy(() => import("./pages/Generator"));
 
 const router = createBrowserRouter([
@@ -34,6 +35,7 @@ function App() {
         withCSSVariables
         theme={theme}
       >
+        <Notifications />
         <GlobalContextWrapper>
           <RouterProvider router={router} />
         </GlobalContextWrapper>

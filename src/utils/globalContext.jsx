@@ -41,7 +41,7 @@ function GlobalContextWrapper({ children }) {
   const [shouldWaitUpload, setShouldWaitUpload] = useState(false);
 
   function validateGeneratorAccess() {
-    if (generalInfo.fullName.length > 0 && workspaces.length > 0) {
+    if (generalInfo.fullName.length > 0) {
       setGeneratorAccess(false);
     } else {
       setGeneratorAccess(true);
@@ -50,7 +50,7 @@ function GlobalContextWrapper({ children }) {
 
   useEffect(() => {
     validateGeneratorAccess();
-  }, [generalInfo, workspaces, tools]);
+  }, [generalInfo, workspaces]);
 
   const collectFullInfo = () => {
     setFullInformation({ generalInfo, workspaces, tools });
