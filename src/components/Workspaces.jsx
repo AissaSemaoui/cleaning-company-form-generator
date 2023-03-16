@@ -30,7 +30,6 @@ const useStayles = createStyles((theme) => ({
   },
   accordion: {
     backgroundColor: theme.colors.background[0],
-    // border: `1px solid ${theme.colors.neutral[3]}`,
     boxShadow: theme.shadows.xs,
   },
 }));

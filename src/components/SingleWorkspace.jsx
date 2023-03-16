@@ -1,37 +1,37 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useGlobalContext } from "../utils/globalContext";
+import React, { useEffect, useState } from "react";
 import { Box } from "@mantine/core";
 import WorkspaceTable from "./WorkspaceTable";
 import Comment from "./Comment";
 import DropFiles from "./DropFiles";
 import { defaultSoilType } from "../utils/data";
-import { useDidUpdate } from "@mantine/hooks";
 
 function SingleWorkspace({ tasks, id, currentWorkspace, setWorkspaces }) {
   const [selectedTasks, setSelectedTasks] = useState(
     currentWorkspace?.selectedTasks || []
   );
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState(currentWorkspace?.images || []);
   const [comment, setComment] = useState(currentWorkspace?.comment || "");
 
-  const data = {
-    id,
-    selectedTasks,
-    images,
-    comment,
-    soilType: defaultSoilType,
-  };
-  if (currentWorkspace) {
-    currentWorkspace.id = id;
-    currentWorkspace.selectedTasks = selectedTasks;
-    currentWorkspace.comment = comment;
-    currentWorkspace.images = images;
-  } else {
-    setWorkspaces((prev) => {
-      prev.push(data);
-      return prev;
-    });
-  }
+  useEffect(() => {
+    const data = {
+      id,
+      selectedTasks,
+      images,
+      comment,
+      soilType: defaultSoilType,
+    };
+    if (currentWorkspace) {
+      currentWorkspace.id = id;
+      currentWorkspace.selectedTasks = selectedTasks;
+      currentWorkspace.comment = comment;
+      currentWorkspace.images = images;
+    } else {
+      setWorkspaces((prev) => {
+        prev.push(data);
+        return prev;
+      });
+    }
+  }, [selectedTasks, images, comment]);
 
   return (
     <>

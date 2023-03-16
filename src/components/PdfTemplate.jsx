@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
 
 //* ------------------------- Pdf Template Component ------------------------- */
 
-function PdfTemplate({ fullInformation }) {
+function PdfTemplate({ fullInformation, generateDocumentTitle }) {
   const { generalInfo, workspaces, tools } = fullInformation;
 
   const {
@@ -93,14 +93,6 @@ function PdfTemplate({ fullInformation }) {
     spaceType,
     serviceFrequency,
   } = generalInfo || {};
-
-  const generateDocumentTitle = () => {
-    let title = "";
-    title += fullName;
-    let currentDate = new Date();
-    title += `_${currentDate.getDate()}/${currentDate.getMonth()}/${currentDate.getFullYear()}`;
-    return title;
-  };
 
   return (
     <Document title={generateDocumentTitle()}>
@@ -158,7 +150,7 @@ function PdfTemplate({ fullInformation }) {
               return workspace.selectedTasks.length > 0 ||
                 workspace.comment !== "" ||
                 workspace.images?.length > 0 ? (
-                <View>
+                <View key={workspace?.id}>
                   {workspace.selectedTasks.length > 0 ? (
                     <View>
                       <WorkspaceTablePdf data={workspace} />
@@ -173,14 +165,18 @@ function PdfTemplate({ fullInformation }) {
                   )}
                   <View style={styles.imagesWrapper}>
                     {workspace.images?.map((image) => (
-                      <Image style={styles.image} src={image} />
+                      <Image
+                        key={image?.temporaryUrl}
+                        style={styles.image}
+                        src={image?.temporaryUrl}
+                      />
                     ))}
                   </View>
                 </View>
               ) : null;
             })}
           </View>
-          <View style={styles.mt}>
+          <View style={styles.mt} wrap={false}>
             <Text style={styles.title}>les outils disponible : </Text>
             <Text style={styles.text}>
               {tools?.tools?.length > 0

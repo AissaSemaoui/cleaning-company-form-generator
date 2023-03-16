@@ -53,11 +53,15 @@ function Home() {
 
   const navigate = useNavigate();
 
+  const handlePreview = async () => {
+    collectFullInfo();
+    navigate("/generated_result");
+  };
+
   const handleGenerate = async () => {
     collectFullInfo();
-    await uploadToFirebase().then((res) => {
-      navigate("/generated_result");
-    });
+    navigate("/generated_result");
+    uploadToFirebase();
   };
 
   const handleReset = () => {
@@ -75,8 +79,8 @@ function Home() {
     return (
       <Button
         variant="outline"
-        disabled={generatorAccess}
-        onClick={handleGenerate}
+        // disabled={generatorAccess}
+        onClick={handlePreview}
       >
         Aperçu
       </Button>

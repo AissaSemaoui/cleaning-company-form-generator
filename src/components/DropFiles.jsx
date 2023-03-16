@@ -25,15 +25,15 @@ function DropFiles(props) {
   const openRef = useRef(null);
 
   const getImageUrl = (image) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setImages((prev) => [...prev, reader.result]);
-    };
-    reader.readAsDataURL(image);
+    let imageUrl = URL.createObjectURL(image);
+
+    setImages((prev) => [...prev, { temporaryUrl: imageUrl, file: image }]);
   };
 
   const deleteImage = (currentImg) => {
-    setImages((prev) => prev.filter((image) => image !== currentImg));
+    setImages((prev) =>
+      prev.filter((image) => image.temporaryUrl !== currentImg.temporaryUrl)
+    );
   };
 
   const hanldeDrop = (imageFiles) => {
@@ -85,7 +85,10 @@ function DropFiles(props) {
                       overflow: "hidden",
                     }}
                   >
-                    <img src={image} className={classes.carouselImg} />
+                    <img
+                      src={image.temporaryUrl}
+                      className={classes.carouselImg}
+                    />
                   </Box>
                   <ActionIcon
                     color="red"

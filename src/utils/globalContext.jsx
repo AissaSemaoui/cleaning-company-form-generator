@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { createContext, useContext } from "react";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
-import { db } from "../utils/firebase";
+import { db, storage } from "../utils/firebase";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 const GlobalContext = createContext();
 
@@ -37,10 +38,7 @@ function GlobalContextWrapper({ children }) {
   );
   const [selectedWorkspaces, setSelectedWorkspaces] = useState([]);
   const [generatorAccess, setGeneratorAccess] = useState(false);
-
-  useEffect(() => {
-    validateGeneratorAccess();
-  }, [generalInfo, workspaces, tools]);
+  const [shouldWaitUpload, setShouldWaitUpload] = useState(false);
 
   function validateGeneratorAccess() {
     if (generalInfo.fullName.length > 0 && workspaces.length > 0) {
@@ -50,6 +48,14 @@ function GlobalContextWrapper({ children }) {
     }
   }
 
+  useEffect(() => {
+    validateGeneratorAccess();
+  }, [generalInfo, workspaces, tools]);
+
+  const collectFullInfo = () => {
+    setFullInformation({ generalInfo, workspaces, tools });
+  };
+
   const generateDocumentId = () => {
     let title = "";
     title += generalInfo.fullName.replace(" ", "_");
@@ -58,15 +64,47 @@ function GlobalContextWrapper({ children }) {
     return title;
   };
 
-  const uploadToFirebase = async () => {
-    return setDoc(
-      doc(db, "collectedData", generateDocumentId()),
-      fullInformation
-    );
+  const generateDocumentTitle = () => {
+    let title = "";
+    title += generalInfo?.fullName;
+    let currentDate = new Date();
+    title += `_${currentDate.getDate()}/${currentDate.getMonth()}/${currentDate.getFullYear()}`;
+    return title;
   };
 
-  const collectFullInfo = () => {
-    setFullInformation({ generalInfo, workspaces, tools });
+  const uploadToFirebase = async () => {
+    setShouldWaitUpload(true);
+    const newWorkspaces = await Promise.all(
+      workspaces.map(async (workspace) => {
+        const imagesUrls = await Promise.all(
+          workspace.images.map(async (image) => {
+            const storageRef = ref(
+              storage,
+              `images/${fullInformation.generalInfo.fullName}/${image.file.name}`
+            );
+
+            await uploadBytes(storageRef, image.file);
+            return await getDownloadURL(storageRef);
+          })
+        );
+
+        return {
+          ...workspace,
+          images: imagesUrls,
+        };
+      })
+    );
+
+    const dataToUpload = {
+      generalInfo,
+      workspaces: newWorkspaces,
+      tools,
+    };
+
+    return setDoc(
+      doc(db, "collectedData", generateDocumentId()),
+      dataToUpload
+    ).then(() => setShouldWaitUpload(false));
   };
 
   return (
@@ -85,6 +123,8 @@ function GlobalContextWrapper({ children }) {
         generatorAccess,
         uploadToFirebase,
         collectFullInfo,
+        generateDocumentTitle,
+        shouldWaitUpload,
       }}
     >
       {children}
